@@ -1,0 +1,22 @@
+*可通过以下两种方法进行安装
+1、安装了anaconda的情况下，可以使用以下一行命令从Anaconda云上的matsci通道安装pymatgen：
+   “conda install --channel matsci pymatgen”
+   如果上述操作失败，请尝试使用conda安装一些关键依赖项，然后执行pip install：
+   “conda install --yes numpy scipy matplotlib”
+   “pip install pymatgen”
+   对pymatgen进行更新，则输入：
+   “conda upgrade pymatgen”
+   在任何系统上安装pymatgen的最简单方法是使用pip：
+   “pip install pymatgen” 适用于Mac和Windows。
+   通过pip升级pymatgen：
+   “pip install --upgrade pymatgen”
+   最前沿的发展版本是在pymatgen Github回购。开发版本可能更加错误，但可能包含新功能。
+   Github版本包括完整的测试文件。克隆源后，您可以键入repo的根目录：
+   “pip install .”
+   或者以开发模式安装软件包：
+   “pip install -e .”
+所有平台的分布说明见：http://pymatgen.org/installation.html
+
+
+2、
+*

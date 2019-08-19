@@ -6,7 +6,7 @@
    “pip install pymatgen”
    对pymatgen进行更新，则输入：
    “conda upgrade pymatgen”
-   在任何系统上安装pymatgen的最简单方法是使用pip：
+2.在任何系统上安装pymatgen的最简单方法是使用pip：
    “pip install pymatgen” 适用于Mac和Windows。
    通过pip升级pymatgen：
    “pip install --upgrade pymatgen”
@@ -18,5 +18,5 @@
 所有平台的分布说明见：http://pymatgen.org/installation.html
 
 
-2、
+
 *

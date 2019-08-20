@@ -61,7 +61,7 @@ This package provides the modules for performing large scale transformations on 
            # 从poscar字符串生成TransformedStructure。
         6. classmethod from_snl（snl ）
            # 从SNL创建TransformedStructure。
-        7. get_vasp_input（vasp_input_set = <class'pymatgen.io.vasp.sets.MPRelaxSet'>，** kwargs ）
+        7. get_vasp_input（vasp_input_set = ass'pymatgen.io.vasp.sets.MPRelaxSet'>，** kwargs ）
            # 返回VASP输入作为vasp对象的字典。
         8. redo_next_change（）
            # 重做TransformedStructure中最后一次撤消的更改。
@@ -100,8 +100,12 @@ This package provides the modules for performing large scale transformations on 
               # 替代构造函数来自结构而不是TransformedStructures。
            7. redo_next_change（）,set_parameter（key，value）,undo_last_change（）,write_vasp_input（** kwargs ）
               # 同库materials
-
          4. batch_write_vasp_input（transformed_structures，vasp_input_set = <class'pymatgen.io.vasp.sets.MPRelaxSet'>，
                            output_dir ='。'，create_directory = True，subfolder = None，include_cif = False，** kwargs ）
             # 按照output_dir / {group} / {formula} _ {number}格式，将一系列转换结构的vasp输入写入output_dir。
-   - 类：TransformedStructure（structure，transformations = None，history = None，other_parameters = None ）
+            
+            
+            
+            
+            
+            

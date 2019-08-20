@@ -1,0 +1,84 @@
+ymatgen.alchemy
+This package provides the modules for performing large scale transformations on a large number of structures.
+#该软件包提供了用于在大量结构上执行大规模转换的模块。
+
+   submodules -- 
+   
+   alchemy.filters  --http://pymatgen.org/pymatgen.alchemy.filters.html
+   - 类：1. AbstractStructureFilter  base： monty.json.MSONable
+           # 定义用于执行结构测试的API。在转换期间保留将True返回到测试的结构，而删除返回False的结构。
+        2. ChargeBalanceFilter    base： pymatgen.alchemy.filters.AbstractStructureFilter）
+           # 从移位器中移除未充电平衡的结构。（这仅在结构被氧化态修饰时起作用，因为仅具有元素位点的结构被自动假设为具有0的净电荷）
+        3. ContainsSpecieFilter（species，strict_compare = False，AND = True，exclude = False ）
+           base： pymatgen.alchemy.filters.AbstractStructureFilter 
+           # 过滤包含某些元素或物种的结构。默认情况下，按原子序数比较 
+        4. RemoveDuplicatesFilter（structure_matcher = <pymatgen.analysis.structure_matcher.StructureMatcher object>，symprec = None ）
+           base： pymatgen.alchemy.filters.AbstractStructureFilter
+           # 此过滤器从转换器中删除精确的重复结构。
+        5. RemoveExistingFilter（existing_structures，structure_matcher = <pymatgen.analysis.structure_matcher.StructureMatcher object>，symprec = None ）
+           base： pymatgen.alchemy.filters.AbstractStructureFilter
+           # 此过滤器从转换器中删除给定列表中存在的结构。
+        6. SpecieProximityFilter（specie_and_min_dist_dict ）  base： pymatgen.alchemy.filters.AbstractStructureFilter
+           # 此过滤器可移除某些种类中过于靠近的结构。
+        7. SpeciesMaxDistFilter（sp1，sp2，max_dist ）  base： pymatgen.alchemy.filters.AbstractStructureFilter
+           # 此过滤器通过预定义的max_dist删除具有两个不是最近邻近的特定种类的结构。
+           # 例如，如果您正在分析锂电池材料，那么出于静电原因，您会预期每个Li +与较低氧化态过渡金属最接近。
+          
+   alchemy.materials  --http://pymatgen.org/pymatgen.alchemy.materials.html
+   - 类：TransformedStructure（structure，transformations = None，history = None，other_parameters = None ）
+        base： monty.json.MSONable
+        包含转换历史的新结构的容器对象。每个转换结构由具有相关转换历史的一系列结构组成。从结构初始化转换后的结构。
+        1. append_transformation（transformation，return_alternatives = False，clear_redo = True ）
+           # 将变换附加到转换后的TransformedStructure上。
+        2. extend_transformations（transformations，return_alternatives = False ）
+           # 将一系列转换扩展到转换后的TransformedStructure。
+        3. static from_cif_string（cif_string，transformations = None，primitive = True，occupancy_tolerance = 1.0 ）
+           # 从cif字符串生成TransformedStructure。
+        4. classmethod from_dict（d ）
+           # 从dict创建TransformedStructure。
+        5. static from_poscar_string（poscar_string，transformations = None ）
+           # 从poscar字符串生成TransformedStructure。
+        6. classmethod from_snl（snl ）
+           # 从SNL创建TransformedStructure。
+        7. get_vasp_input（vasp_input_set = ass'pymatgen.io.vasp.sets.MPRelaxSet'>，** kwargs ）
+           # 返回VASP输入作为vasp对象的字典。
+        8. redo_next_change（）
+           # 重做TransformedStructure中最后一次撤消的更改。
+        9. set_parameter（key，values）
+           # TransformedStructure中所有结构的副本。每次转换后都会存储一个结构。
+        10.to_snl（authors，projects = None，references =''，remarks = None，data = None，created_at = None ）
+        11.undo_last_change（）
+           # 撤消TransformedStructure中的最后一次更改。
+        12.write_vasp_input（vasp_input_set = <class'pymatgen.io.vasp.sets.MPRelaxSet'>，output_dir ='。'，create_directory = True，** kwargs ）
+           # 写入vasp输入参数
+    
+   alchemy.transmuters  --http://pymatgen.org/pymatgen.alchemy.transmuters.html
+   该模块实现了各种传输类。Transmuters本质上是从各种数据源生成TransformedStructures的类。它们支持高吞吐量生成新结构和输入文件。
+   它还包括辅助函数batch_write_vasp_input，用于生成运行的整个vasp输入文件目录。
+   - 类：1. CifTransmuter（cif_string，transformations = None，primitive = True，extend_collection = False ）
+           base： pymatgen.alchemy.transmuters.StandardTransmuter
+           # 从cif字符串生成Transmuter，可能包含多个结构。
+        2. PoscarTransmuter（poscar_string，transformations = None，extend_collection = False ）
+           base： pymatgen.alchemy.transmuters.StandardTransmuter
+           # 从一系列POSCAR生成transmuter。
+        3. StandardTransmuter（transformed_structures，transformations = None，extend_collection = 0，ncores = None ）
+           base： object
+           Transmuter对象的一个示例，它在许多结构上执行一系列转换以生成TransformedStructures。
+           从初始列表中初始化转换 pymatgen.alchemy.materials.TransformedStructure。
+           1. add_tags（tags）
+              # 为transmuter生成的结构添加标签。
+           2. append_transformation（transformation，extend_collection = False，clear_redo = True ）
+              # 将转换附加到所有TransformedStructures。
+           3. append_transformed_structures（tstructs_or_transmuter ）
+              # 方法被重载以接受转换结构或转换的列表，在这种情况下它附加第二个转换的结构。
+           4. apply_filter（structure_filter ）
+              # 将structure_filter应用于transmuter中的TransformedStructures列表。
+           5. extend_transformations（transformations） 
+              # 将一系列转换扩展到TransformedStructure。
+           6. static from_structures（structures，transformations=None，extend_collection = 0 ）
+              # 替代构造函数来自结构而不是TransformedStructures。
+           7. redo_next_change（）,set_parameter（key，value）,undo_last_change（）,write_vasp_input（** kwargs ）
+              # 同库materials
+         4. batch_write_vasp_input（transformed_structures，vasp_input_set = <class'pymatgen.io.vasp.sets.MPRelaxSet'>，
+                           output_dir ='。'，create_directory = True，subfolder = None，include_cif = False，** kwargs ）
+            # 按照output_dir / {group} / {formula} _ {number}格式，将一系列转换结构的vasp输入写入output_dir。

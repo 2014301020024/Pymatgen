@@ -210,26 +210,100 @@ This package contains electronic structure related tools and analyses.
           4. summed_icohp：为自旋极化化合物添加两个自旋通道的ICOHP：返回：eV中的icohp值
 
 ##electronic_structure.core --http://pymatgen.org/pymatgen.electronic_structure.core.html#####################################
+   - 类：Magmom（力矩，saxis =（0，0，1） 
+        base： monty.json.MONable 
+        # 积极发展的新类。用于处理磁矩的类。定义相对于自旋量子化轴的位置或物种的磁矩。设计用于电子结构计算。
+          对于一般情况，Magmom可以通过向量指定，例如m = Magmom（[1.0,1.0,2.0]），下标将按预期工作，例如m [0]给出1.0
+          对于共线计算，Magmom可以假设为标量，例如m = Magmom（5.0）将按预期工作，例如float（m）给出5.0
+          对于magmoms列表，还有一些有用的静态方法：
+          @Magmom.are_collinear（magmoms） - 如果为真，则可以安全地初始化共线电子结构计算，浮点（Magmom）给出预期的标量磁矩值
+          @Magmom.get_consistent_set_and_saxis（magmoms） - 对于非共线电子结构计算，必须使用全局一致的自旋轴。
+          所有采用magmoms列表的方法都会接受magmom作为Magmom对象或scalars / lists，并在内部自动转换为Magmom表示。
+        # 1. static are_collinear（magmoms ）：方法检查一组磁矩是否彼此共线。
+          2. from_global_moment_and_saxis（global_moment，saxis ）
+             从给定的全局磁矩初始化Magmom的便捷方法，即具有saxis =（0,0,1）的磁矩，并提供saxis。如果不知道所需saxis框架内磁矩的分量，方法很有用。
+          3. from_moment_relative_to_crystal_axes（moment，lattice）：从相对于晶轴提供的磁矩获得Magmom对象。
+          4. get_00t_magmom_with_xyz_saxis（）：该方法返回具有磁矩[0,0，t]的Magmom对象，其中t是总磁矩，并且saxis根据需要旋转。
+          5. static get_consistent_set_and_saxis（magmoms，saxis = None ）：
+             确保磁矩列表使用相同旋转轴的方法。返回Magmoms列表及其全局旋转轴的元组。
+          6. get_moment（saxis =（0，0，1） ）
+             获得相对于给定自旋量子化轴的磁矩。如果没有提供轴，则相对于Magmom的内部自旋量化轴给出力矩，即相当于Magmom.moment
+          7. get_moment_relative_to_crystal_axes（lattice）：如果标量magmoms，时间将任意沿z。用于将时刻写入magCIF文件。
+          8. static get_suggested_saxis（magmoms ）：此方法返回一组磁矩的建议旋转轴，以最大磁矩作为参考。
+          9. get_xyz_magmom_with_001_saxis（）：在默认设置saxis = [0,0,1]中返回Magmom，并根据需要旋转磁矩。
+          10.static have_consistent_saxis（magmoms ）：此方法检查列表中的所有Magmom对象是否具有一致的自旋量化轴。
+
+        Orbital
+        base： enum.Enum
+        # 特定轨道的枚举类型。指数基本上是VASP中报告轨道的顺序，没有特殊含义。
+        # orbital_type：返回轨道的轨道类型。
+
+        OrbitalType[
+        base： enum.Enum
+        # 眼眶型的枚举类型。指数基本上是方位角量子数，l。
+
+        Spin
+        base： enum.Enum
+        # 旋转的枚举类型。只有上下。用法：Spin.up，Spin.down。
+
+##electronic_structure.dos --http://pymatgen.org/pymatgen.electronic_structure.dos.html#######################################
+  - 类：CompleteDos（structure，total_dos，pdoss ）
+       base： pymatgen.electronic_structure.dos.Dos
+       # 此库定义了总dos，还提供了PDos列表。主要由pymatgen.io.vasp.Vasprun用于从vasprun.xml文件创建完整的Dos。
+         total_dos - 结构的总Dos
+         pdoss - pdoss以{Site：{Orbital：{Spin：Densities}}}提供
+         pdos - 形式部分密度的字典{Site：{Orbital：{Spin：Densities}}}
+       # 1. get_element_dos（）：获取元素投影Dos。
+         2. get_element_spd_dos（el ）：获取元素和spd投影Dos
+         3. get_site_dos（site）：获取站点的总Dos（所有轨道）。
+         4. get_site_orbital_dos（site，orbital）：获取特定站点的特定轨道的Dos。
+         5. get_site_spd_dos（site）：获取轨道投影特定站点的Dos。
+         6. get_site_t2g_eg_resolved_dos（site）：获取t2g，例如特定站点的预计DOS。
+         7. get_spd_dos（）：获得轨道投影Dos。
+         8. spin_polarization：计算费米能级的自旋极化。
+      
+       DOS（energy，density，efermi ）
+       base： pymatgen.core.spectrum.Spectrum
+       # 替换基本的DOS对象。所有其他DOS对象都是此对象的扩展版本。
+       # get_cbm_vbm（tol = 0.001，abs_tol = False，spin = None ）：期待DOS对象并找到cbm和vbm。
+       # get_gap（tol = 0.001，abs_tol = False，spin = None ）：期待DOS对象并找到差距。
+       # get_interpolated_gap（tol = 0.001，abs_tol = False，spin = None ）：期待DOS对象并找到差距。
+      
+       Dos（efermi，energy，density）
+       base： monty.json.MSONable
+       # 基本的DOS对象。所有其他DOS对象都是此对象的扩展版本。
+       # 1. 在DOS基础上有以下补充
+         2. get_densities（spin = None ）：返回特定旋转的状态密度。
+         3. get_interpolated_value（energy）：返回特定能量的插值密度。
+         4. get_smeared_densities（sigma ）：返回密度的Dict表示，{Spin：densities}。
+
+       FermiDos（dos：pymatgen.electronic_structure.dos.Dos，structure：pymatgen.core.structure.Structure = None，
+                 nelecs：float = None，bandgap：float = None ）
+       base：pymatgen.electronic_structure.dos.Dos，monty.json.MSONable
+       # 该包装类有助于关联状态密度，掺杂水平（即载流子浓度）和相应的费米能级。
+         负掺杂浓度表明多数载流子是电子（n型掺杂）; 正掺杂浓度表明空穴是多数载流子（p型掺杂）。
+         nelecs - dos能量范围内包含的电子数。它用于标准化密度。默认值是结构中的电子总数。
+         bandgap - 如果设置，则剪切能量值，使电子带隙与此值匹配。
+       # 1. get_doping（fermi_level：float，temperature：float ） →float 
+            计算给定费米能级和温度下的掺杂（多数载流子浓度）。简单的左黎曼和用于积分能量和平衡费米 - 狄拉克分布的状态密度。
+         2. get_fermi（concentration：float，temperature：float，rtol：float = 0.01，nstep：int = 50，step：float = 0.1，
+                      precision：int = 8 ）
+            求出在给定温度（T）下掺杂浓度等于浓度的费米能级。使用贪婪算法，其中通过计算在不断变得更精细的网格处的掺杂来最小化相对误差。
+         3. get_fermi_interextrapolated（concentration：float，temperature：float，warn：bool =True，
+                                         c_ref：float= 10000000000.0，** kwargs ） →float
+            与get_fermi类似，不同之处在于当get_fermi无法收敛时，返回内插或外推费米，假设费米能级随log（abs（浓度））线性变化。
+
+       LobsterCompleteDos（structure，total_dos，pdoss ）
+       base： pymatgen.electronic_structure.dos.CompleteDos
+       # 用于Lobster的扩展CompleteDOS
+       # 1. get_site_orbital_dos（site，orbital）：获取特定站点的特定轨道的Dos。
+         2. get_site_t2g_eg_resolved_dos（site）
+            获取t2g，例如特定站点的预计DOS。：param site：与CompleteDos关联的Structure中的站点。
+         3. get_spd_dos（）：获得轨道投影Dos。
+         4. add_densities（density1，density2 ）：两种密度相加的方法。
+         5. f0（E，fermi，T ）：返回平衡费米 - 狄拉克。
+         
+##electronic_structure.plotter --http://pymatgen.org/pymatgen.electronic_structure.plotter.html###############################
+  该模块详见参考手册，用于图形绘制。
   
-        
-        
-        
-        
-       
-       
-       
-       
-       
-       
-       
-       
-       
-
-
-                             
-                             
-                             
-                             
-                             
-                             
-                             
+##############################################################################################################################

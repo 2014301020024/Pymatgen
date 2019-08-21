@@ -1,4 +1,4 @@
-ymatgen.alchemy
+pymatgen.alchemy
 This package provides the modules for performing large scale transformations on a large number of structures.
 #该软件包提供了用于在大量结构上执行大规模转换的模块。
 

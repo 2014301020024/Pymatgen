@@ -1,1 +1,261 @@
+pymatgen.electronic_structure
+This package contains electronic structure related tools and analyses.
+# 该软件包包含与电子结构相关的工具和分析。
 
+  submodules --
+  
+  electronic_structure.bandstructure --http://pymatgen.org/pymatgen.electronic_structure.bandstructure.html
+  - 类：BandStructure（kpoints，eigenvals，lattice，efermi，labels_dict =None，coords_are_cartesian =False，
+                      structure=None，projections=None）
+       base： object
+       # 这是最通用的能带结构数据，它可以通过每个点的k点+能量列表来定义
+       # kpoints:the list of kpoints (as Kpoint objects) in the band structure
+         lattice_rec：带结构的倒易晶格。
+         efermi：费米能量
+         is_spin_polarized：如果带结构是自旋极化，则为真，否则为假
+         bands：能量本征值为{spin：ndarray}
+         nb_bands：返回band结构中的band数
+         structure：返回结构
+         projections：投影为{spin：ndarray}
+       # 1. get_band_gap（）：返回带隙数据,形式为dict {“energy”，“direct”，“transition”}。
+            @“energy”：带隙能量“direct”：一个布尔值，告知间隙是否是直接的“过渡”：transition的kpoint标签（例如，“Gamma-X”）
+         2. get_cbm（）：返回有关CBM的数据。
+         3. get_direct_band_gap（）：返回直接带隙的值。
+         4. get_direct_band_gap_dict（）：返回由带旋转索引的带隙字典及其带指数和k点指数。
+         5. get_kpoint_degeneracy（kpoint，cartesian = False，tol = 0.01 ）：
+            基于结构对称性返回给定k点的简并性，如果没有结构，则简并或无。返回类型：（int或None）
+         6. get_projection_on_elements（）：返回元素投影字典。如果band结构中没有投影则返回空字典。
+         7. get_projections_on_elements_and_orbitals（el_orb_spec ）：返回元素和特定轨道上的投影字典的方法。
+         8. get_sym_eq_kpoints（kpoint，cartesian = False，tol = 0.01 ）：返回唯一对称等效k点的列表。
+            如果结构不可用则返回None，返回类型：（[1x3数组]或无）
+         9. get_vbm（）：返回有关VBM的数据。
+         10.is_metal（efermi_tol = 0.0001 ）：通过查看费米能级是否超过带，检查能带结构是否表示金属。如果是金属则返回为真，否则为假。
+         
+       BandStructureSymmLine(kpoints, eigenvals, lattice, efermi, labels_dict, coords_are_cartesian=False, 
+                             structure=None, projections=None)
+       base: pymatgen.electronic_structure.bandstructure.BandStructure, monty.json.MSONable
+       # 此对象沿着布里渊区域中的选定（对称）线存储带结构。将不同的对称线（例如：Gamma到Z）称为“分支”。
+       # 1. apply_scissor（new_band_gap ）：应用scissor opreation（CBM的移位）以适合给定的带隙。
+            参数：new_band_gap - scissor带结构需要的带隙。
+            返回具有应用scissor shift的BandStructureSymmLine对象
+         2. get_branch（index）：返回什么分支是kpoint。可以有几个分支。
+            参数：index - kpoint索引
+            返回字典列表[{“name”，“start_index”，“end_index”，“index”}]，表示k_point所在的所有分支。
+         3. get_equivalent_kpoints（index）：返回与给定值相等的kpoint索引列表（意味着它们是相同的frac cords）。
+            参数：index - kpoint索引
+            返回一个等价指数的列表
+          
+       Kpoint(coords, lattice, to_unit_cell=False, coords_are_cartesian=False, label=None)[source]
+       base: monty.json.MSONable
+       # 用于存储kpoint对象的类。kpoint定义为格子和frac或笛卡尔坐标语法类似于pymatgen.core.structure中的站点对象。
+       
+       LobsterBandStructureSymmLine(kpoints, eigenvals, lattice, efermi, labels_dict, coords_are_cartesian=False, 
+                                    structure=None, projections=None)[source]
+       base: pymatgen.electronic_structure.bandstructure.BandStructureSymmLine
+       # 1. apply_scissor（new_band_gap ）：同BandStructureSymmline组块。
+         2. get_projection_on_elements（）：返回元素投影字典。如果band结构中没有投影则返回空字典。
+         3. get_projections_on_elements_and_orbitals（el_orb_spec ）：返回元素和特定轨道上的投影字典的方法。
+         4. get_reconstructed_band_structure（list_bs，efermi = None ）：该方法采用带结构列表并从所有带结构重建一个带结构对象。
+            @当在多个独立作业中拆分非自我一致的带结构运行并希望合并结果时，这通常非常有用
+            参数：list_bs - BandStructure或BandStructureSymmLine对象的列表。
+            返回BandStructure或BandStructureSymmLine对象（取决于list_bs对象的类型）
+  
+  electronic_structure.boltztrap --http://pymatgen.org/pymatgen.electronic_structure.boltztrap.html
+  - 类：BoltztrapAnalyzer(gap=None, mu_steps=None, cond=None, seebeck=None, kappa=None, hall=None, doping=None,  
+                         mu_doping=None, seebeck_doping=None, cond_doping=None, kappa_doping=None, hall_doping=None,
+                         intrans=None, dos=None, dos_partial=None, carrier_conc=None, vol=None, warning=None, 
+                         bz_bands=None, bz_kpoints=None, fermi_surface_data=None)
+        base：object
+        # 用于存储boltztrap运行的所有数据的类。构造函数直接获取Boltztrap生成的所有数据。
+          gap - eV中插值后的间隙
+          mu_steps - eV中电子化学势（或费米能级）的步骤。
+          cond - 电子电导率张量除以不同温度和费米水平下的恒定弛豫时间（sigma / tau）。
+          seebeck - 不同温度和费米水平下的塞贝克张量。
+          kappa - 电子热导率张量除以不同温度和费米水平的恒定弛豫时间（kappa / tau）。
+          hall - 不同温度和费米水平的霍尔张量格式。
+          doping - 给予Boltztrap不同的doping水平。
+          mu_doping - 给出一组给定的电子化学势（或费米能级）。
+          seebeck_doping - 不同温度和掺杂水平下的塞贝克张量。
+          cond_doping - 电子电导率张量除以不同温度和掺杂水平下的恒定弛豫时间（sigma / tau）
+          kappa_doping - 在不同温度和掺杂水平下，导热系数张量除以恒定的弛豫时间（kappa / tau）。
+          hall_doping - 不同温度和掺杂水平下的霍尔张量。
+          intrans - 输入词典，例如{“scissor”：0.0}
+          carrier_conc - 每单位电池中电子（或空穴）中载流子的浓度
+          dos - 由Boltztrap计算的dos作为pymatgen Dos对象
+          dos_partial - 网站和轨道上投射的部分DOS的数据
+          vol - 埃立方体中的晶胞体积（A ^ 3）
+          bz_bands - k点线上插值带的数据（run_type = BANDS）
+          bz_kpoints - 插值带的倒数坐标中的k点（run_type = BANDS）
+          fermi_surface_data - 从输出.cube文件导入的3D网格中的能量值。
+        # 1. get_average_eff_mass（output ='eigs'，doping_levels = True ）
+             给出平均有效质量张量。我们将其称为平均值，因为它考虑了布里渊区域中的所有波段和区域。
+             参数:特征值的'eigs'，完整的'张量'
+             返回{temp：[]}，'n'：{temp：[]}}具有有效质量张量的数组，每个温度和每个掺杂水平的平均值的特征值（取决于输出）。
+             'p'与孔有效质量张量相关，'n'与电子有效质量张量相关。
+          2. get_carrier_concentration（）：给出载体浓度（cm ^ -3）。
+             返回字典{temp：[]}，在每个温度下具有载流子浓度阵列（以cm ^ -3为单位），该阵列涉及电子化学势的每个步骤。
+          3. get_complete_dos（structure，analyzer_for_second_spin =None）
+             从插值的投影带结构中给出一个带有DOS的CompleteDos对象。
+          4. get_complexity_factor（output ='average'，temp = 300，doping_levels = False，Lambda = 0.5 ）
+             费米表面复杂度因子的计算方法如参考文献中所述。
+             参数：输出 - 'average'返回使用seebeck和电导率张量的三个对角线分量的平均值计算的复杂度因子。
+                 '张量'使复杂因子返回到塞贝克和电导率张量的三个对角线分量。
+                  doping_levels - False意味着为化学势的每个值计算复杂度因子True表示针对n和p类型的掺杂水平的每个值计算复杂度因子
+                  温度 - 计算的塞贝克温度和电导率。
+                  Lambda拟合参数用于模拟散射（0.5表示恒定弛豫时间）。
+             返回：如果doping_levels设置为False，则复合因子值与化学势的值列表; 
+                  如果doping_levels设置为True，则具有n个p键的dict，其包含复杂因子与掺杂水平的值列表; 
+                  如果选择“张量”，则列表的每个元素都是包含复杂因子的三个分量的列表。
+          5. get_conductivity（output= 'eigs' ，doping_levels =True，relaxation_time = 1E-14 ）
+             给出电导率（1 / Ohm * m）的全3x3张量形式，3个特征值，或平均值（trace / 3.0）
+             如果doping_levels = True，结果给出不同的p和n掺杂水平（给定通过self.doping），否则它作为一系列电子化学势值给出
+             返回：{ 'P'：[]， 'N'：[]}}。'p'与p型掺杂时的导电性和n型掺杂时的导电性'n'相关。
+                  否则，返回{temp：[]}字典。结果包含对称电导率张量（格式='eigs'）或全张量（3x3阵列）或平均值的有序三个特征值。
+          6. get_extreme（target_prop，maximize = True，min_temp = None，max_temp = None，min_doping = None，
+                          max_doping = None，isotropy_tolerance = 0.05，use_average = True ）
+             该方法在一系列载波，温度和掺杂水平上采用特征值，并告诉您给定target_property可以实现的“最佳”值是多少。
+             返回：{“值”，“温度”，“兴奋剂”，“各向同性”}；返回类型：带有子键的键{“p”，“n”，“best”}的字典
+          7. get_hall_carrier_concentration（）：给出霍尔载流子浓度（cm ^ -3）。 
+          8. get_power_factor（输出= 'eigs' ，doping_levels =True，relaxation_time = 1E-14 ）
+             给出功率因数（Seebeck ^ 2 *电导率），以3x3张量形式，3个特征值，或平均值（trace / 3.0）
+             如果doping_levels = True，结果在不同的p和n掺杂水平（由自掺杂给出）给出，否则它作为一系列电子化学势值给出
+          9. get_seebeck（output ='eigs'，doping_levels = True ）
+             给出一个完整的3x3张量形式的塞贝克系数（microV / K），3个特征值，
+             或平均值（trace / 3.0）如果doping_levels = True，结果给出不同的p和n掺杂水平，否则它是作为一系列电子化学势值给出的
+             
+get_seebeck_eff_mass（output ='average'，temp = 300，doping_levels = False，Lambda = 0.5 ）[来源]
+塞贝克有效质量计算如参考文献中所述。Gibbs，ZM等人，来自ab initio带结构计算的有效质量和费米表面复杂性因子。npj计算材料3,8（2017）。
+
+参数
+输出 - 'average'返回使用seebeck张量的三个对角线分量的平均值计算的seebeck有效质量。'tensor'将seebeck有效质量方面返回到塞贝克张量的三个对角线分量。
+
+doping_levels - False意味着为化学势的每个值计算塞贝克有效质量True表示针对n和p类型的掺杂水平的每个值计算塞贝克有效质量
+
+温度 - 计算塞贝克的温度。
+
+Lambda拟合参数用于模拟散射（0.5表示恒定弛豫时间）。
+
+返回
+如果doping_levels设置为False，则sebebeck有效质量与化学势的值列表; 如果doping_levels设置为True，则具有n个p键的dict，其包含用于掺杂水平的seebeck有效质量的值列表; 如果选择'tensor'，则列表的每个元素都是包含seebeck有效质量的三个分量的列表。
+
+get_symm_bands（结构，efermi，kpt_line =无，labels_dict =无）[来源]
+函数用于从Boltztrap输出读取波段并获得与DFT计算中的波段相当的BandStructureSymmLine对象（如果提供相同的kpt_line）。默认的kpt_line和labels_dict是指定结构的高对称k点的标准路径。可以从要与之比较的BandStructureSymmLine对象中提取它们。必须指定efermi变量来创建BandStructureSymmLine对象（通常它来自DFT或Boltztrap calc）
+
+get_thermal_conductivity（output ='eigs'，doping_levels = True，k_el = True，relaxation_time = 1e-14 ）[source]
+给出电导率的电子部分为全3x3张量形式，3个特征值，或平均值（迹线/ 3.0）如果doping_levels = True，结果给出不同的p和n掺杂水平（由自我给出） .doping），否则它是作为一系列电子化学势值给出的
+
+参数
+output（string） - 输出的类型。'张量'给出了完整的3x3
+
+'eigs'其3个特征值和（张量，） -
+
+三个特征值的平均值（'平均值'） -
+
+doping_levels（boolean） - 对于给出的结果为真
+
+兴奋剂等级，结果为假（不同） -
+
+不同的电子化学势（at） -
+
+k_el（boolean） - 对于k_0-PF * T为真，对于k_0为假
+
+relax_time（float） - 以秒为单位的恒定弛豫时间
+
+返回
+{ 'P'：[]， 'N'：[]}}。'p'与p型掺杂时的导热性和n型掺杂时的导热率'n'有关。否则，返回{temp：[]}字典。结果包含对称电导率张量（格式='eigs'）或全张量（3x3阵列）（输出='张量'）或平均值（输出='平均值）的有序三个特征值。结果包括给定的恒定弛豫时间
+
+单位是W / mK
+
+返回类型
+如果doping_levels = True，则为字典{temp
+
+get_zt（输出= 'eigs' ，doping_levels =真，relaxation_time = 1E-14，KL = 1.0 ）[源]
+给出一个完整的3x3张量形式的ZT系数（S ^ 2 * cond * T / thermal cond），作为3个特征值，或者作为平均值（trace / 3.0）给出如果doping_levels = True，结果在不同的p给出和n掺杂水平（由self.doping给出），否则它是作为一系列电子化学势值给出的。我们假设恒定的弛豫时间和恒定的晶格热导率
+
+参数
+output（string） - 输出的类型。'张量'给出了完整的3x3
+
+'eigs'其3个特征值和（张量，） -
+
+三个特征值的平均值（'平均值'） -
+
+doping_levels（boolean） - 对于给出的结果为真
+
+兴奋剂等级，结果为假（不同） -
+
+不同的电子化学势（at） -
+
+relax_time（float） - 以秒为单位的恒定弛豫时间
+
+k_l（float） - 晶格热电阻 W /（m * K）
+
+返回
+{ 'P'：[]， 'N'：[]}}。'p'在p型掺杂时与ZT连接，在n型掺杂时与'Z'连接到ZT。否则，返回{temp：[]}字典。结果包含对称ZT张量的排序三个特征值（格式='eigs'）或全张量（3x3阵列）（输出='张量'）或平均值（输出='平均值'）。结果包括给定的恒定弛豫时间和晶格热导率
+
+返回类型
+如果doping_levels = True，则为字典{temp
+
+static parse_cond_and_hall（path_dir，doping_levels = None ）[来源]
+解析电导率和霍尔张量：param path_dir：包含.condtens / .halltens文件的路径：param doping_levels：（[float]） - 使用lvls，解析outtrans得到这个
+
+返回
+mu_steps，cond，seebeck，kappa，hall，pn_doping_levels，mu_doping，seebeck_doping，cond_doping，kappa_doping，hall_doping，carrier_conc
+
+static parse_intrans（path_dir ）[source]
+解析boltztrap.intrans主要是为了提取应用于波段或其他输入的剪刀的值：param path_dir：（str）dir包含boltztrap.intrans文件
+
+返回
+包含Boltztrap运行中使用的各种输入的字典。
+
+返回类型
+intrans（dict）
+
+static parse_outputtrans（path_dir ）[source]
+解析.outputtrans文件
+
+参数
+path_dir - 包含boltztrap.outputtrans的dir
+
+返回
+元组 - （run_type，warning，efermi，gap，doping_levels）
+
+static parse_struct（path_dir ）[source]
+解析boltztrap.struct文件（只有卷）：param path_dir：（str）dir包含boltztrap.struct文件
+
+返回
+（浮动）音量
+
+static parse_transdos（path_dir，efermi，dos_spin = 1，trim_dos = False ）[来源]
+解析.transdos（总DOS）和.transdos_x_y（部分DOS）文件：param path_dir：（str）dir包含DOS文件：param efermi：（float）Fermi energy：param dos_spin：（int）-1 for spin down，+ 1 for spin up：param trim_dos：（bool）是否要后处理/修剪DOS
+
+返回
+元组 - （DOS，部分DOS的字典）
+
+异常BoltztrapError（msg ）[来源]
+基地： Exception
+
+boltztrap的异常类。当boltztrap发出错误时引发
+
+
+        
+        
+        
+        
+       
+       
+       
+       
+       
+       
+       
+       
+       
+
+
+                             
+                             
+                             
+                             
+                             
+                             
+                             

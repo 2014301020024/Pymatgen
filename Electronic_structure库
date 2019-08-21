@@ -88,153 +88,81 @@ This package contains electronic structure related tools and analyses.
           bz_kpoints - 插值带的倒数坐标中的k点（run_type = BANDS）
           fermi_surface_data - 从输出.cube文件导入的3D网格中的能量值。
         # 1. get_average_eff_mass（output ='eigs'，doping_levels = True ）
-             给出平均有效质量张量。我们将其称为平均值，因为它考虑了布里渊区域中的所有波段和区域。
-             参数:特征值的'eigs'，完整的'张量'
-             返回{temp：[]}，'n'：{temp：[]}}具有有效质量张量的数组，每个温度和每个掺杂水平的平均值的特征值（取决于输出）。
-             'p'与孔有效质量张量相关，'n'与电子有效质量张量相关。
+             给出平均有效质量张量。
           2. get_carrier_concentration（）：给出载体浓度（cm ^ -3）。
-             返回字典{temp：[]}，在每个温度下具有载流子浓度阵列（以cm ^ -3为单位），该阵列涉及电子化学势的每个步骤。
-          3. get_complete_dos（structure，analyzer_for_second_spin =None）
-             从插值的投影带结构中给出一个带有DOS的CompleteDos对象。
+          3. get_complete_dos（structure，analyzer_for_second_spin =None）：从插值的投影带结构中给出一个带有DOS的CompleteDos对象。
           4. get_complexity_factor（output ='average'，temp = 300，doping_levels = False，Lambda = 0.5 ）
-             费米表面复杂度因子的计算方法如参考文献中所述。
-             参数：输出 - 'average'返回使用seebeck和电导率张量的三个对角线分量的平均值计算的复杂度因子。
-                 '张量'使复杂因子返回到塞贝克和电导率张量的三个对角线分量。
-                  doping_levels - False意味着为化学势的每个值计算复杂度因子True表示针对n和p类型的掺杂水平的每个值计算复杂度因子
-                  温度 - 计算的塞贝克温度和电导率。
-                  Lambda拟合参数用于模拟散射（0.5表示恒定弛豫时间）。
-             返回：如果doping_levels设置为False，则复合因子值与化学势的值列表; 
-                  如果doping_levels设置为True，则具有n个p键的dict，其包含复杂因子与掺杂水平的值列表; 
-                  如果选择“张量”，则列表的每个元素都是包含复杂因子的三个分量的列表。
+             费米表面复杂度因子的计算。
           5. get_conductivity（output= 'eigs' ，doping_levels =True，relaxation_time = 1E-14 ）
              给出电导率（1 / Ohm * m）的全3x3张量形式，3个特征值，或平均值（trace / 3.0）
-             如果doping_levels = True，结果给出不同的p和n掺杂水平（给定通过self.doping），否则它作为一系列电子化学势值给出
-             返回：{ 'P'：[]， 'N'：[]}}。'p'与p型掺杂时的导电性和n型掺杂时的导电性'n'相关。
-                  否则，返回{temp：[]}字典。结果包含对称电导率张量（格式='eigs'）或全张量（3x3阵列）或平均值的有序三个特征值。
           6. get_extreme（target_prop，maximize = True，min_temp = None，max_temp = None，min_doping = None，
                           max_doping = None，isotropy_tolerance = 0.05，use_average = True ）
              该方法在一系列载波，温度和掺杂水平上采用特征值，并告诉您给定target_property可以实现的“最佳”值是多少。
-             返回：{“值”，“温度”，“兴奋剂”，“各向同性”}；返回类型：带有子键的键{“p”，“n”，“best”}的字典
           7. get_hall_carrier_concentration（）：给出霍尔载流子浓度（cm ^ -3）。 
           8. get_power_factor（输出= 'eigs' ，doping_levels =True，relaxation_time = 1E-14 ）
-             给出功率因数（Seebeck ^ 2 *电导率），以3x3张量形式，3个特征值，或平均值（trace / 3.0）
-             如果doping_levels = True，结果在不同的p和n掺杂水平（由自掺杂给出）给出，否则它作为一系列电子化学势值给出
+             给出功率因数（Seebeck ^ 2 *电导率），以3x3张量形式，3个特征值，或平均值（trace / 3.0）。
           9. get_seebeck（output ='eigs'，doping_levels = True ）
-             给出一个完整的3x3张量形式的塞贝克系数（microV / K），3个特征值，
-             或平均值（trace / 3.0）如果doping_levels = True，结果给出不同的p和n掺杂水平，否则它是作为一系列电子化学势值给出的
-             
-get_seebeck_eff_mass（output ='average'，temp = 300，doping_levels = False，Lambda = 0.5 ）[来源]
-塞贝克有效质量计算如参考文献中所述。Gibbs，ZM等人，来自ab initio带结构计算的有效质量和费米表面复杂性因子。npj计算材料3,8（2017）。
+             给出一个完整的3x3张量形式的塞贝克系数（microV / K），3个特征值，或平均值（trace / 3.0）。
+          10.get_seebeck_eff_mass（output ='average'，temp = 300，doping_levels = False，Lambda = 0.5 ）
+             塞贝克有效质量计算。
+          11.get_symm_bands（structure，efermi，kpt_line =None，labels_dict =None）
+             函数用于从Boltztrap输出读取波段并获得与DFT计算中的波段相当的BandStructureSymmLine对象。
+          12.get_thermal_conductivity（output ='eigs'，doping_levels = True，k_el = True，relaxation_time = 1e-14 ）
+             给出电导率的电子部分为全3x3张量形式，3个特征值，或平均值（迹线/ 3.0）
+          13.get_zt（output= 'eigs' ，doping_levels =True，relaxation_time = 1E-14，KL = 1.0 ）
+             给出一个完整的3x3张量形式的ZT系数（S ^ 2 * cond * T / thermal cond），作为3个特征值，或者作为平均值（trace / 3.0）给出。
+          14.static parse_cond_and_hall（path_dir，doping_levels = None ）
+             解析电导率和霍尔张量。
+          15.static parse_intrans（path_dir ）：解析boltztrap.intrans主要是为了提取应用于波段或其他输入的剪刀的值。
+          16.static parse_outputtrans（path_dir ）：解析.outputtrans文件
+          17.static parse_struct（path_dir ）：解析boltztrap.struct文件（只有卷）
+          18.1static parse_transdos（path_dir，efermi，dos_spin = 1，trim_dos = False ）
+             解析.transdos（总DOS）和.transdos_x_y（部分DOS）文件
+       
+       BoltztrapRunner(bs, nelec, dos_type='HISTO', energy_grid=0.005, lpfac=10, run_type='BOLTZ', band_nb=None, 
+       tauref=0, tauexp=0, tauen=0, soc=False, doping=None, energy_span_around_fermi=1.5, scissor=0.0, kpt_line=None, 
+       spin=None, cond_band=False, tmax=1300, tgrid=50, symprec=0.001, cb_cut=10, timeout=7200)[
+       base: monty.json.MSONable
+       # 该类用于在带结构对象上运行Boltztrap。
+         bs - 带结构对象;nelec - 电子数量；energy_grid - 用于集成的能量步骤（eV）；
+         dos_type - 带结构集成的两个选项：使用四面体方法的“HISTO”（直方图）或“TETRA”。TETRA通常结果更好但时间长。
+         lpfac - 真实空间中的插值点数。默认情况下，10在真实空间中提供的点数比在倒数空间中给出的k点数多10倍。
+         run_type - boltztrap用法的类型。默认情况下 - BOLTZ :(默认）计算传输系数 - BANDS：沿指定的k点插入energy_span_around_fermi变量中指定的能量范围中包含的所有波段 - DOS：计算总和部分dos（需要自定义BoltzTraP代码！） - FERMI：计算费米表面或更正确以获得某些内插频带
+         band_nb - 表示带号。用于费米表面插值（run_type =“FERMI”）；cond_band - 如果在FERMI模式中指定导带，则将此变量设置为True。
+         tauref - 参考放松时间。如果我们想要超出恒定的弛豫时间进行建模，则仅设置为不等于零的值；tauexp - 非恒定弛豫时间方法中能量的指数。
+         tauen - 非恒定弛豫时间方法的参考能量；
+         soc - 自旋 - 轨道耦合（soc）计算的结果通常给出非极化（无旋转上升或下降）结果，但是单电子占据。
+               如果band结构来自soc计算，则应将soc设置为True（默认为False）
+         doping- 您想要计算的固定掺杂水平。默认情况下，此值设置为1e16到1e22，增量因子为10。
+         energy_span_around_fermi - 通常不需要在整个能量范围内进行插值，而是在费米能级附近的特定范围内进行插值。
+                                    默认情况下，它是1.5 eV。如果选择DOS或BANDS类型，则此范围自动设置为覆盖整个能量范围。
+         scissor- 适用于带隙（eV）。这适用于在不改变带形状的情况下移动带边缘的scissor操作。这有助于纠正DFT中经常被低估的带隙。默认值为0.0（无剪刀）。
+         kpt_line - 作为数组的k点的分数坐标列表或用于BANDS模式计算的Kpoint对象列表（高对称k点的标准路径自动设置为默认值）
+         tmax - 计算的最高温度（K）（默认值= 1300）；tgrid - 计算的温度间隔（默认值= 50）
+         symprec - 1e-3是pymatgen的默认值。
+         cb_cut - 默认情况下，10％的最高导带被移除，因为它们通常不准确。调整cb_cut以更改已删除的波段的百分比（0-100）。
+         timeout - 总时间限制（以秒为单位）：主要是为了在尝试查找费米能级时避免无限循环。
+       # 1. run（path_dir = None，convergence = True，write_input = True，clear_dir = False，max_lpfac = 150，min_egrid = 5e-05 ）
+            写输入（可选），运行BoltzTraP，并确保收敛（可选）：
+         2. write_def（output_file ）
+         3. write_energy（output_file ）
+         4. write_input（output_dir ）
+         5. write_intrans（output_file ）
+         6. write_proj（output_file_proj，output_file_def ）
+         7. write_struct（output_file ）
+         8. compare_sym_bands（bands_obj，bands_ref_obj，nb =None）
+            计算sym线上bzt和vasp带结构之间的相关平均值，对于所有波段和局部（对于每个分支），如果指定nb，则为差值平方（％）。
+         9. eta_from_seebeck（seeb，Lambda ）
+            它需要一个seebeck值并调整分析seebeck直到它相等返回：eta，其中两个seebeck系数相等（化学势降低）
+         10.read_cube_file（文件名）
+         11.seebeck_eff_mass_from_carr（eta，n，T，Lambda ）
+            在某个载流子浓度eta下计算seebeck有效质量，以kB * T为单位，n in cm-3，T in K，以m0为单位返回质量
+         12.seebeck_eff_mass_from_seebeck_carr（seeb，n，T，Lambda ）
+            找到分析和计算的seebeck相同的化学势，然后计算该化学势和某个载流子浓度n下的塞贝克有效质量
+         13.seebeck_spb（eta，Lambda = 0.5 ）：单抛物线模型中的塞贝克解析公式
 
-参数
-输出 - 'average'返回使用seebeck张量的三个对角线分量的平均值计算的seebeck有效质量。'tensor'将seebeck有效质量方面返回到塞贝克张量的三个对角线分量。
 
-doping_levels - False意味着为化学势的每个值计算塞贝克有效质量True表示针对n和p类型的掺杂水平的每个值计算塞贝克有效质量
 
-温度 - 计算塞贝克的温度。
-
-Lambda拟合参数用于模拟散射（0.5表示恒定弛豫时间）。
-
-返回
-如果doping_levels设置为False，则sebebeck有效质量与化学势的值列表; 如果doping_levels设置为True，则具有n个p键的dict，其包含用于掺杂水平的seebeck有效质量的值列表; 如果选择'tensor'，则列表的每个元素都是包含seebeck有效质量的三个分量的列表。
-
-get_symm_bands（结构，efermi，kpt_line =无，labels_dict =无）[来源]
-函数用于从Boltztrap输出读取波段并获得与DFT计算中的波段相当的BandStructureSymmLine对象（如果提供相同的kpt_line）。默认的kpt_line和labels_dict是指定结构的高对称k点的标准路径。可以从要与之比较的BandStructureSymmLine对象中提取它们。必须指定efermi变量来创建BandStructureSymmLine对象（通常它来自DFT或Boltztrap calc）
-
-get_thermal_conductivity（output ='eigs'，doping_levels = True，k_el = True，relaxation_time = 1e-14 ）[source]
-给出电导率的电子部分为全3x3张量形式，3个特征值，或平均值（迹线/ 3.0）如果doping_levels = True，结果给出不同的p和n掺杂水平（由自我给出） .doping），否则它是作为一系列电子化学势值给出的
-
-参数
-output（string） - 输出的类型。'张量'给出了完整的3x3
-
-'eigs'其3个特征值和（张量，） -
-
-三个特征值的平均值（'平均值'） -
-
-doping_levels（boolean） - 对于给出的结果为真
-
-兴奋剂等级，结果为假（不同） -
-
-不同的电子化学势（at） -
-
-k_el（boolean） - 对于k_0-PF * T为真，对于k_0为假
-
-relax_time（float） - 以秒为单位的恒定弛豫时间
-
-返回
-{ 'P'：[]， 'N'：[]}}。'p'与p型掺杂时的导热性和n型掺杂时的导热率'n'有关。否则，返回{temp：[]}字典。结果包含对称电导率张量（格式='eigs'）或全张量（3x3阵列）（输出='张量'）或平均值（输出='平均值）的有序三个特征值。结果包括给定的恒定弛豫时间
-
-单位是W / mK
-
-返回类型
-如果doping_levels = True，则为字典{temp
-
-get_zt（输出= 'eigs' ，doping_levels =真，relaxation_time = 1E-14，KL = 1.0 ）[源]
-给出一个完整的3x3张量形式的ZT系数（S ^ 2 * cond * T / thermal cond），作为3个特征值，或者作为平均值（trace / 3.0）给出如果doping_levels = True，结果在不同的p给出和n掺杂水平（由self.doping给出），否则它是作为一系列电子化学势值给出的。我们假设恒定的弛豫时间和恒定的晶格热导率
-
-参数
-output（string） - 输出的类型。'张量'给出了完整的3x3
-
-'eigs'其3个特征值和（张量，） -
-
-三个特征值的平均值（'平均值'） -
-
-doping_levels（boolean） - 对于给出的结果为真
-
-兴奋剂等级，结果为假（不同） -
-
-不同的电子化学势（at） -
-
-relax_time（float） - 以秒为单位的恒定弛豫时间
-
-k_l（float） - 晶格热电阻 W /（m * K）
-
-返回
-{ 'P'：[]， 'N'：[]}}。'p'在p型掺杂时与ZT连接，在n型掺杂时与'Z'连接到ZT。否则，返回{temp：[]}字典。结果包含对称ZT张量的排序三个特征值（格式='eigs'）或全张量（3x3阵列）（输出='张量'）或平均值（输出='平均值'）。结果包括给定的恒定弛豫时间和晶格热导率
-
-返回类型
-如果doping_levels = True，则为字典{temp
-
-static parse_cond_and_hall（path_dir，doping_levels = None ）[来源]
-解析电导率和霍尔张量：param path_dir：包含.condtens / .halltens文件的路径：param doping_levels：（[float]） - 使用lvls，解析outtrans得到这个
-
-返回
-mu_steps，cond，seebeck，kappa，hall，pn_doping_levels，mu_doping，seebeck_doping，cond_doping，kappa_doping，hall_doping，carrier_conc
-
-static parse_intrans（path_dir ）[source]
-解析boltztrap.intrans主要是为了提取应用于波段或其他输入的剪刀的值：param path_dir：（str）dir包含boltztrap.intrans文件
-
-返回
-包含Boltztrap运行中使用的各种输入的字典。
-
-返回类型
-intrans（dict）
-
-static parse_outputtrans（path_dir ）[source]
-解析.outputtrans文件
-
-参数
-path_dir - 包含boltztrap.outputtrans的dir
-
-返回
-元组 - （run_type，warning，efermi，gap，doping_levels）
-
-static parse_struct（path_dir ）[source]
-解析boltztrap.struct文件（只有卷）：param path_dir：（str）dir包含boltztrap.struct文件
-
-返回
-（浮动）音量
-
-static parse_transdos（path_dir，efermi，dos_spin = 1，trim_dos = False ）[来源]
-解析.transdos（总DOS）和.transdos_x_y（部分DOS）文件：param path_dir：（str）dir包含DOS文件：param efermi：（float）Fermi energy：param dos_spin：（int）-1 for spin down，+ 1 for spin up：param trim_dos：（bool）是否要后处理/修剪DOS
-
-返回
-元组 - （DOS，部分DOS的字典）
-
-异常BoltztrapError（msg ）[来源]
-基地： Exception
-
-boltztrap的异常类。当boltztrap发出错误时引发
 
 
         

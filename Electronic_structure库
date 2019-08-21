@@ -4,7 +4,7 @@ This package contains electronic structure related tools and analyses.
 
   submodules --
   
-  electronic_structure.bandstructure --http://pymatgen.org/pymatgen.electronic_structure.bandstructure.html
+##electronic_structure.bandstructure --http://pymatgen.org/pymatgen.electronic_structure.bandstructure.html###################
   - 类：BandStructure（kpoints，eigenvals，lattice，efermi，labels_dict =None，coords_are_cartesian =False，
                       structure=None，projections=None）
        base： object
@@ -60,7 +60,7 @@ This package contains electronic structure related tools and analyses.
             参数：list_bs - BandStructure或BandStructureSymmLine对象的列表。
             返回BandStructure或BandStructureSymmLine对象（取决于list_bs对象的类型）
   
-  electronic_structure.boltztrap --http://pymatgen.org/pymatgen.electronic_structure.boltztrap.html
+##electronic_structure.boltztrap --http://pymatgen.org/pymatgen.electronic_structure.boltztrap.html###########################
   - 类：BoltztrapAnalyzer(gap=None, mu_steps=None, cond=None, seebeck=None, kappa=None, hall=None, doping=None,  
                          mu_doping=None, seebeck_doping=None, cond_doping=None, kappa_doping=None, hall_doping=None,
                          intrans=None, dos=None, dos_partial=None, carrier_conc=None, vol=None, warning=None, 
@@ -160,11 +160,57 @@ This package contains electronic structure related tools and analyses.
          12.seebeck_eff_mass_from_seebeck_carr（seeb，n，T，Lambda ）
             找到分析和计算的seebeck相同的化学势，然后计算该化学势和某个载流子浓度n下的塞贝克有效质量
          13.seebeck_spb（eta，Lambda = 0.5 ）：单抛物线模型中的塞贝克解析公式
+  
+ ##electronic_structure.cohp --http://pymatgen.org/pymatgen.electronic_structure.cohp.html####################################
+   - 类：Cohp(efermi, energies, cohp, are_coops=False, icohp=None)：COHP（Crystal Orbital Hamilton Populations）
+        base: monty.json.MSONable
+        # 基础的COHP对象。
+          are_coops：指示此对象是否描述COHP或COOP。
+          efermi：费米能量。
+          energies：一系列能量。
+          cohp（{Spin：np.array}）：表示每次旋转的COHP。
+          icohp（{Spin：np.array}）：表示每次旋转的ICOHP。
+        # 1. get_cohp（spin = None，integrated = False ）：返回特定旋转的COHP或ICOHP。
+          2. get_icohp（spin = None ）：方便的替代方案是获得特定旋转的ICOHP。
+          3. get_interpolated_value（energy，intergated=False）：返回特定能量的COHP。
+          4. has_antibnd_states_below_efermi（spin = None，limit = 0.01 ）：返回dict，指示是否存在低于费米能级的反键状态，具体取决于自旋
+         
+        CompleteCohp（structure，avg_cohp，cohp_dict，bonds = None，are_coops = False，orb_res_cohp = None ）
+        base： pymatgen.electronic_structure.cohp.Cohp
+        # 一个包装类，用于定义平均COHP和单个COHP。
+          结构 - 与此COHP相关的结构。
+          avg_cohp - 作为COHP对象的平均cohp。
+          cohps - 形式为{bond：COHP}的单个债券的COHP对象的字典
+          bonds - 包含{label：{key：val}}形式键信息的字典。
+          are_coops - 指示Cohp对象是COHP还是COOP。COHP的违约率为假。
+          orb_res_cohp - 轨道分辨的COHP。
+        # 1. get_cohp_by_label（label）：获取特定的COHP对象。
+          2. get_orbital_resolved_cohp（label，orbital）：获得轨道解析的COHP。
+          3. get_summed_cohp_by_label_and_orbital_list（label_list，orbital_list，divisor = 1 ）
+             返回包含求和的COHP除以除数的COHP对象
+          4. get_summed_cohp_by_label_list（label_list，divisor = 1 ）：返回包含求和的COHP除以除数的COHP对象
+       
+        IcohpCollection（list_labels，list_atom1，list_atom2，list_length，list_translation，list_num，list_icohp，is_spin_polarized，are_coops = False ）[source]
+        base： monty.json.MSONable
+        # 用于存储IcohpValues的类
+        # 1. extremum_icohpvalue（summed_spin_channels = True，spin = <Spin.up：1> ）：获得最强键（即值最小）的ICOHP / ICOOP
+          2. get_icohp_by_label（label，summed_spin_channels = True，spin = <Spin.up：1> ）：获得某个键的icohp值
+          3. get_icohp_dict_by_bondlengths（minbondlength = 0.0，maxbondlength = 8.0 ）：获得对应于某些键长的IcohpValues的字典
+          4. get_icohp_dict_of_site（site，minsummedicohp = None，maxsummedicohp = None，minbondlength = 0.0，
+             maxbondlength = 8.0，only_bonds_to = None ）：得到某个网站的IcohpValue的字典（用整数表示）
+          5. get_summed_icohp_by_label_list（label_list，divisor = 1.0，summed_spin_channels = True，spin = <Spin.up：1> ）
+             得到由标签列表指示的几个ICOHP值的总和
+            
+        IcohpValue（label，atom1，atom2，length，translation，num，icohp，are_coops = False ）
+        base： monty.json.MSONable
+        # 用于存储ICOHP或ICOOP值的信息的类
+        # 1. icohpvalue（spin = <Spin.up：1> ）
+          2. is_spin_polarized：告诉自旋极化计算是否：return：Boolean
+          3. num_bonds：告诉ICOHP值为平均值的债券数量：return：Int
+          4. summed_icohp：为自旋极化化合物添加两个自旋通道的ICOHP：返回：eV中的icohp值
 
-
-
-
-
+##electronic_structure.core --http://pymatgen.org/pymatgen.electronic_structure.core.html#####################################
+  
         
         
         
